@@ -100,9 +100,9 @@ function ExploradorContent() {
       </div>
 
       {/* Resultados */}
-      <p className="text-muted-foreground text-sm mb-4">Mostrando {filtered.length} proyectos.</p>
+      <p className="text-muted-foreground text-sm mb-4">Mostrando {Math.min(filtered.length, 100)} de {filtered.length} proyectos.</p>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto bg-[#141414]/80 backdrop-blur-sm border border-white/5 rounded-xl">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/10 text-left text-muted-foreground uppercase text-xs tracking-wider">
@@ -111,6 +111,7 @@ function ExploradorContent() {
               <th className="py-3 px-2">Fecha Ingreso</th>
               <th className="py-3 px-2">Estado</th>
               <th className="py-3 px-2">Tipo</th>
+              <th className="py-3 px-2 text-center">IA</th>
             </tr>
           </thead>
           <tbody>
@@ -121,6 +122,15 @@ function ExploradorContent() {
                 <td className="py-2.5 px-2 text-muted-foreground text-xs whitespace-nowrap">{formatDateHuman(m.fecha_de_ingreso)}</td>
                 <td className="py-2.5 px-2 text-muted-foreground text-xs">{m.estado_del_proyecto_de_ley}</td>
                 <td className="py-2.5 px-2 text-muted-foreground text-xs">{m.tipo_de_proyecto || "N/A"}</td>
+                <td className="py-2.5 px-2 text-center">
+                  <button
+                    disabled
+                    className="text-xs px-2 py-1 rounded-full border border-[#c0392b]/30 text-[#c0392b] opacity-70 cursor-not-allowed hover:bg-[#c0392b]/10 transition-colors"
+                    title="Próximamente"
+                  >
+                    Resumen IA
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

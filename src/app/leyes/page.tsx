@@ -3,20 +3,119 @@
 import { useMemo } from "react"
 import { useDashboard, DashboardGate } from "@/components/DashboardProvider"
 import { PageHeader } from "@/components/PageHeader"
-import { StorySection } from "@/components/StorySection"
-import { SUCCESS_PATTERN, valueCounts, formatDateHuman } from "@/lib/legislative"
-import { motion } from "framer-motion"
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip,
-} from "recharts"
+import { KpiCard } from "@/components/KpiCard"
+import { EChart } from "@/components/EChart"
+import { BoletinCard } from "@/components/BoletinCard"
+import { getCoauthorsForBoletines } from "@/lib/queries"
+import { SUCCESS_PATTERN, valueCounts } from "@/lib/legislative"
 
 function LeyesContent() {
-  const { data } = useDashboard()
+  const { data, coautores, diputados } = useDashboard()
+
+  const dipMap = useMemo(() => {
+    return new Map(diputados.map(d => [d.diputado, d.partido || d.partido_politico || null]))
+  }, [diputados])
 
   const leyes = useMemo(() => {
     if (!data) return []
     return data.jakMociones.filter(m => SUCCESS_PATTERN.test(m.estado_del_proyecto_de_ley))
   }, [data])
+
+  // Tiempo promedio de tramitación (movido desde Estado)
+  const avgDays = useMemo(() => {
+    const leyesConFechas = leyes.filter(m => m.publicado_en_diario_oficial && m.fecha_de_ingreso)
+    if (leyesConFechas.length === 0) return "N/A"
+
+    const totalDays = leyesConFechas.reduce((sum, m) => {
+      const pub = new Date(m.publicado_en_diario_oficial!).getTime()
+      const ing = new Date(m.fecha_de_ingreso!).getTime()
+      return sum + Math.round((pub - ing) / (1000 * 60 * 60 * 24))
+    }, 0)
+
+    return Math.round(totalDays / leyesConFechas.length)
+  }, [leyes])
+
+  // Charts data
+  const leyesPorAnio = useMemo(() => {
+    return valueCounts(
+      leyes.map(m => String(m.anio || "")).filter(s => s !== "")
+    ).sort((a, b) => Number(a.name) - Number(b.name))
+  }, [leyes])
+
+  const leyesPorComision = useMemo(() => {
+    return valueCounts(
+      leyes.map(m => m.comision_inicial || "Desconocida")
+    ).slice(0, 10).reverse()
+  }, [leyes])
+
+  // ECharts options
+  const barAnioOption = useMemo(() => ({
+    tooltip: {
+      trigger: "axis" as const,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      formatter: (params: any) => {
+        const p = params[0]
+        return `<strong>${p.name}</strong><br/>${p.value} leyes`
+      },
+    },
+    grid: { left: 40, right: 20, top: 20, bottom: 40 },
+    xAxis: {
+      type: "category" as const,
+      data: leyesPorAnio.map(d => d.name),
+      axisLabel: { color: "#b0b0b0", fontSize: 12 },
+      axisLine: { lineStyle: { color: "rgba(255,255,255,0.1)" } },
+    },
+    yAxis: {
+      type: "value" as const,
+      axisLabel: { color: "#b0b0b0", fontSize: 12 },
+      splitLine: { lineStyle: { color: "rgba(255,255,255,0.05)" } },
+    },
+    series: [
+      {
+        type: "bar",
+        data: leyesPorAnio.map(d => d.count),
+        itemStyle: {
+          color: "#2ecc71",
+          borderRadius: [4, 4, 0, 0],
+        },
+        barMaxWidth: 40,
+      },
+    ],
+  }), [leyesPorAnio])
+
+  const barComisionOption = useMemo(() => ({
+    tooltip: {
+      trigger: "axis" as const,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      formatter: (params: any) => {
+        const p = params[0]
+        return `<strong>${p.name}</strong><br/>${p.value} leyes`
+      },
+    },
+    grid: { left: 200, right: 30, top: 20, bottom: 20 },
+    xAxis: {
+      type: "value" as const,
+      axisLabel: { color: "#b0b0b0", fontSize: 12 },
+      splitLine: { lineStyle: { color: "rgba(255,255,255,0.05)" } },
+    },
+    yAxis: {
+      type: "category" as const,
+      data: leyesPorComision.map(d => d.name.length > 28 ? d.name.slice(0, 28) + "..." : d.name),
+      axisLabel: { color: "#b0b0b0", fontSize: 11 },
+      axisLine: { lineStyle: { color: "rgba(255,255,255,0.1)" } },
+    },
+    series: [
+      {
+        type: "bar",
+        data: leyesPorComision.map(d => d.count),
+        itemStyle: {
+          color: "#f39c12",
+          borderRadius: [0, 4, 4, 0],
+        },
+        barMaxWidth: 30,
+      },
+    ],
+  }), [leyesPorComision])
 
   if (!data) return null
 
@@ -29,14 +128,6 @@ function LeyesContent() {
     )
   }
 
-  const leyesPorAnio = valueCounts(
-    leyes.map(m => String(m.anio || "")).filter(s => s !== "")
-  ).sort((a, b) => Number(a.name) - Number(b.name))
-
-  const leyesPorComision = valueCounts(
-    leyes.map(m => m.comision_inicial || "Desconocida")
-  ).slice(0, 10).reverse()
-
   return (
     <>
       <PageHeader
@@ -44,74 +135,66 @@ function LeyesContent() {
         subtitle="Análisis de proyectos que finalizaron su tramitación exitosamente."
       />
 
+      {/* KPI: Tiempo promedio de tramitación */}
+      <div className="my-8 bg-[#141414]/60 backdrop-blur-sm border border-white/5 rounded-xl py-6">
+        <KpiCard
+          title="Tiempo Promedio de Tramitación"
+          value={typeof avgDays === "number" ? `${avgDays} días` : avgDays}
+          subtitle="Desde ingreso a publicación en Diario Oficial"
+        />
+      </div>
+
       {/* Productividad por año */}
-      <StorySection
-        title="Productividad Legislativa"
-        description={`Se han consolidado ${leyes.length} leyes a lo largo de los años. Este gráfico muestra en qué años se originaron los proyectos que finalmente tuvieron éxito.`}
-        chart={
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={leyesPorAnio}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="name" tick={{ fill: "#b0b0b0", fontSize: 12 }} />
-              <YAxis tick={{ fill: "#b0b0b0", fontSize: 12 }} />
-              <Tooltip contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333", borderRadius: 8 }} itemStyle={{ color: "#fff" }} />
-              <Bar dataKey="count" name="Leyes" fill="#2ecc71" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        }
-        textLeft
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center my-12">
+        <div className="lg:col-span-2">
+          <h3 className="text-2xl font-serif font-semibold mb-4">Productividad Legislativa</h3>
+          <p className="text-muted-foreground leading-relaxed">
+            Se han consolidado {leyes.length} leyes a lo largo de los años. Este gráfico muestra en qué años se originaron los proyectos que finalmente tuvieron éxito.
+          </p>
+        </div>
+        <div className="lg:col-span-3">
+          <EChart
+            option={barAnioOption}
+            style={{ height: "300px" }}
+          />
+        </div>
+      </div>
 
       {/* Por comisión */}
-      <StorySection
-        title="Áreas de Éxito"
-        description="Las comisiones listadas representan los nichos donde el trabajo legislativo ha sido más efectivo, logrando la aprobación final de las leyes."
-        chart={
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={leyesPorComision} layout="vertical" margin={{ left: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis type="number" tick={{ fill: "#b0b0b0", fontSize: 12 }} />
-              <YAxis dataKey="name" type="category" tick={{ fill: "#b0b0b0", fontSize: 11 }} width={200} />
-              <Tooltip contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333", borderRadius: 8 }} itemStyle={{ color: "#fff" }} />
-              <Bar dataKey="count" name="Leyes" fill="#f39c12" radius={[0, 4, 4, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        }
-        textLeft={false}
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center my-12">
+        <div className="lg:col-span-3 order-2 lg:order-1">
+          <EChart
+            option={barComisionOption}
+            style={{ height: "350px" }}
+          />
+        </div>
+        <div className="lg:col-span-2 order-1 lg:order-2">
+          <h3 className="text-2xl font-serif font-semibold mb-4">Áreas de Éxito</h3>
+          <p className="text-muted-foreground leading-relaxed">
+            Las comisiones listadas representan los nichos donde el trabajo legislativo ha sido más efectivo, logrando la aprobación final de las leyes.
+          </p>
+        </div>
+      </div>
 
       <div className="border-t border-white/5 my-8" />
 
-      {/* Listado detallado */}
-      <h3 className="font-serif text-xl mb-6">Listado Detallado</h3>
-      <div className="space-y-3">
-        {leyes.map((ley, i) => (
-          <motion.details
-            key={ley.n_boletin}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: i * 0.02 }}
-            className="bg-[#141414] border border-white/5 rounded-lg group"
-          >
-            <summary className="px-5 py-4 cursor-pointer flex items-center gap-3 hover:bg-white/5 rounded-lg">
-              <span className="text-[#2ecc71] text-lg">&#9878;</span>
-              <span className="text-[#c0392b] font-mono text-xs">{ley.n_boletin}</span>
-              <span className="text-sm flex-1">{ley.nombre_iniciativa}</span>
-            </summary>
-            <div className="px-5 pb-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-muted-foreground">Fecha Ingreso: <span className="text-white">{formatDateHuman(ley.fecha_de_ingreso)}</span></p>
-                <p className="text-muted-foreground">Tipo: <span className="text-white">{ley.tipo_de_proyecto || "N/A"}</span></p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Estado: <span className="text-white">{ley.estado_del_proyecto_de_ley}</span></p>
-                {ley.publicado_en_diario_oficial && (
-                  <p className="text-[#2ecc71]">Publicado: {formatDateHuman(ley.publicado_en_diario_oficial)}</p>
-                )}
-              </div>
-            </div>
-          </motion.details>
-        ))}
+      {/* Listado detallado con BoletinCards */}
+      <h3 className="font-serif text-xl mb-6 text-center">Listado Detallado de Leyes</h3>
+      <div className="space-y-6">
+        {leyes.map((ley, i) => {
+          const leyCoauthors = getCoauthorsForBoletines(coautores, [ley.n_boletin], data.foundName)
+          return (
+            <BoletinCard
+              key={ley.n_boletin}
+              mocion={ley}
+              coauthors={leyCoauthors}
+              dipMap={dipMap}
+              index={i}
+              fullWidth
+              showResumenIA
+            />
+          )
+        })}
       </div>
     </>
   )

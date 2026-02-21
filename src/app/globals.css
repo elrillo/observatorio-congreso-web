@@ -90,6 +90,21 @@
   h1, h2, h3, h4 {
     font-family: var(--font-serif), serif;
   }
+  p {
+    text-align: justify;
+  }
+}
+
+/* Fondo difuminado del congreso */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url('/bg-congreso.png') center/cover no-repeat;
+  filter: blur(20px);
+  opacity: 0.08;
+  pointer-events: none;
 }
 
 /* Scrollbar personalizado */

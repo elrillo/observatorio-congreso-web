@@ -5,8 +5,8 @@ import { useDashboard, DashboardGate } from "@/components/DashboardProvider"
 import { KpiCard } from "@/components/KpiCard"
 import { PageHeader } from "@/components/PageHeader"
 import { StorySection } from "@/components/StorySection"
+import { EChart } from "@/components/EChart"
 import { categorizeCommission, valueCounts, SUCCESS_PATTERN } from "@/lib/legislative"
-import { Treemap, ResponsiveContainer, Tooltip } from "recharts"
 
 const COLORS = ["#c0392b", "#2ecc71", "#3498db", "#f39c12", "#9b59b6", "#1abc9c", "#e67e22", "#95a5a6", "#e74c3c", "#16a085", "#2980b9", "#d35400"]
 
@@ -19,12 +19,21 @@ function ComisionesContent() {
     return valueCounts(data.jakMociones.map(m => categorizeCommission(m.comision_inicial)))
   }, [data])
 
-  const treemapData = useMemo(() =>
-    themeCounts.map((t, i) => ({ name: t.name, size: t.count, fill: COLORS[i % COLORS.length] })),
-    [themeCounts]
-  )
-
   if (!data) return null
+
+  const treemapOption = {
+    tooltip: { trigger: 'item' as const, formatter: '{b}: {c} proyectos' },
+    series: [{
+      type: 'treemap',
+      data: themeCounts.map((t, i) => ({ name: t.name, value: t.count, itemStyle: { color: COLORS[i % COLORS.length] } })),
+      label: { show: true, color: '#fff', fontSize: 12, formatter: '{b}\n{c}' },
+      breadcrumb: { show: false },
+      itemStyle: { borderColor: '#0c0d0e', borderWidth: 2, gapWidth: 2 },
+      levels: [{
+        itemStyle: { borderColor: '#0c0d0e', borderWidth: 3, gapWidth: 3 },
+      }],
+    }],
+  }
 
   const activeTema = selectedTema || themeCounts[0]?.name || null
   const filtered = activeTema
@@ -47,13 +56,7 @@ function ComisionesContent() {
       <StorySection
         title="Mapa de Especialización"
         description="A través de las comisiones, podemos ver dónde se concentra el esfuerzo legislativo.\n\nEste Mapa de Calor agrupa las comisiones específicas en temáticas generales para facilitar la comprensión de las prioridades del diputado."
-        chart={
-          <ResponsiveContainer width="100%" height={350}>
-            <Treemap data={treemapData} dataKey="size" nameKey="name" stroke="rgba(255,255,255,0.1)">
-              <Tooltip contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333", borderRadius: 8 }} itemStyle={{ color: "#fff" }} />
-            </Treemap>
-          </ResponsiveContainer>
-        }
+        chart={<EChart option={treemapOption} style={{ height: '380px' }} />}
         textLeft
       />
 

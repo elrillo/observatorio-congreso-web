@@ -127,8 +127,8 @@ export default function RootLayout({
               <p className="text-muted-foreground text-sm leading-relaxed">
                 &copy; 2026 Reservados todos los derechos.
                 <br /><br />
-                Plataforma de an&aacute;lisis ciudadano basada en datos p&uacute;blicos de la
-                Biblioteca del Congreso Nacional de Chile.
+                Plataforma de an&aacute;lisis ciudadano basada en datos p&uacute;blicos del
+                Sistema de Informaci&oacute;n Legislativa (SIL).
                 <br />
                 Dise&ntilde;ado con rigor y transparencia.
               </p>

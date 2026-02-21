@@ -5,12 +5,8 @@ import { useDashboard, DashboardGate } from "@/components/DashboardProvider"
 import { KpiCard } from "@/components/KpiCard"
 import { PageHeader } from "@/components/PageHeader"
 import { StorySection } from "@/components/StorySection"
+import { EChart } from "@/components/EChart"
 import { PERIODOS, SUCCESS_PATTERN, categorizeCommission, valueCounts } from "@/lib/legislative"
-import {
-  PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Treemap,
-} from "recharts"
 
 const COLORS = ["#c0392b", "#2ecc71", "#3498db", "#f39c12", "#9b59b6", "#1abc9c", "#e67e22", "#95a5a6"]
 
@@ -32,15 +28,51 @@ function PeriodosContent() {
   const themeCounts = valueCounts(
     filtered.map(m => categorizeCommission(m.comision_inicial))
   )
-  const treemapData = themeCounts.map((t, i) => ({
-    name: t.name,
-    size: t.count,
-    fill: COLORS[i % COLORS.length],
-  }))
 
   const yearCounts = valueCounts(
     filtered.map(m => String(m.anio || "")).filter(s => s !== "")
   ).sort((a, b) => Number(a.name) - Number(b.name))
+
+  // ECharts options
+  const donutOption = {
+    tooltip: { trigger: 'item' as const, formatter: '{b}: {c} ({d}%)' },
+    legend: { bottom: 0, type: 'scroll' as const, textStyle: { color: '#b0b0b0', fontSize: 11 } },
+    series: [{
+      type: 'pie',
+      radius: ['40%', '70%'],
+      center: ['50%', '42%'],
+      data: statusCounts.map((s, i) => ({ value: s.count, name: s.name, itemStyle: { color: COLORS[i % COLORS.length] } })),
+      label: { show: false },
+      emphasis: { label: { show: true, fontSize: 13, fontWeight: 'bold' as const, color: '#fff' } },
+    }],
+  }
+
+  const treemapOption = {
+    tooltip: { trigger: 'item' as const, formatter: '{b}: {c} proyectos' },
+    series: [{
+      type: 'treemap',
+      data: themeCounts.map((t, i) => ({ name: t.name, value: t.count, itemStyle: { color: COLORS[i % COLORS.length] } })),
+      label: { show: true, color: '#fff', fontSize: 12, formatter: '{b}\n{c}' },
+      breadcrumb: { show: false },
+      itemStyle: { borderColor: '#0c0d0e', borderWidth: 2, gapWidth: 2 },
+      levels: [{
+        itemStyle: { borderColor: '#0c0d0e', borderWidth: 3, gapWidth: 3 },
+      }],
+    }],
+  }
+
+  const barOption = {
+    tooltip: { trigger: 'axis' as const },
+    grid: { left: 10, right: 10, top: 10, bottom: 10, containLabel: true },
+    xAxis: { type: 'category' as const, data: yearCounts.map(y => y.name) },
+    yAxis: { type: 'value' as const },
+    series: [{
+      type: 'bar',
+      data: yearCounts.map(y => y.count),
+      itemStyle: { color: '#c0392b', borderRadius: [4, 4, 0, 0] },
+      barMaxWidth: 30,
+    }],
+  }
 
   return (
     <>
@@ -67,7 +99,7 @@ function PeriodosContent() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-10">
-        <KpiCard title="Iniciativas" value={pTotal} subtitle={selected} />
+        <KpiCard title="Presentadas" value={pTotal} subtitle={selected} />
         <KpiCard title="Convertidas en Ley" value={pLeyes} subtitle={`Tasa: ${pTasa.toFixed(1)}%`} />
       </div>
 
@@ -76,46 +108,21 @@ function PeriodosContent() {
       <StorySection
         title={`Desempeño en ${selected}`}
         description={`Durante este mandato, se presentaron ${pTotal} iniciativas.\n\nLa tasa de éxito de este periodo fue de un ${pTasa.toFixed(1)}%.`}
-        chart={
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie data={statusCounts} dataKey="count" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={120} paddingAngle={2}>
-                {statusCounts.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-              </Pie>
-              <Tooltip contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333", borderRadius: 8 }} itemStyle={{ color: "#fff" }} />
-            </PieChart>
-          </ResponsiveContainer>
-        }
+        chart={<EChart option={donutOption} style={{ height: '320px' }} />}
         textLeft
       />
 
       <StorySection
         title="Áreas de Interés"
         description={`En el periodo ${selected}, la mayoría de los proyectos se concentraron en las categorías visualizadas. Esto revela las prioridades políticas y legislativas de este tiempo específico.`}
-        chart={
-          <ResponsiveContainer width="100%" height={300}>
-            <Treemap data={treemapData} dataKey="size" nameKey="name" stroke="rgba(255,255,255,0.1)">
-              <Tooltip contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333", borderRadius: 8 }} itemStyle={{ color: "#fff" }} />
-            </Treemap>
-          </ResponsiveContainer>
-        }
+        chart={<EChart option={treemapOption} style={{ height: '320px' }} />}
         textLeft={false}
       />
 
       <StorySection
         title="Intensidad Anual"
         description={`Distribución año a año de las mociones ingresadas dentro del periodo legislativo ${selected}.`}
-        chart={
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={yearCounts}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="name" tick={{ fill: "#b0b0b0", fontSize: 12 }} />
-              <YAxis tick={{ fill: "#b0b0b0", fontSize: 12 }} />
-              <Tooltip contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333", borderRadius: 8 }} itemStyle={{ color: "#fff" }} />
-              <Bar dataKey="count" name="Proyectos" fill="#c0392b" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        }
+        chart={<EChart option={barOption} style={{ height: '270px' }} />}
         textLeft
       />
 
