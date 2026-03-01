@@ -55,15 +55,15 @@ function AlianzasContent() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const links: any[] = []
 
-    // Nodo central: JAK
+    // Nodo central: JAK — color dorado, el más grande
     nodes.push({
       name: "José Antonio Kast",
-      symbolSize: 50,
+      symbolSize: 80,
       category: 0,
-      itemStyle: { color: "#ffffff" },
+      itemStyle: { color: "#eda744" },
       label: {
         show: true,
-        fontSize: 13,
+        fontSize: 15,
         fontFamily: "Playfair Display, serif",
         fontWeight: "bold",
         color: "#ffffff",
@@ -71,8 +71,9 @@ function AlianzasContent() {
     })
 
     // Nodos de partidos + edges JAK → Partido
+    const maxPartyCount = Math.max(...partyData.map(p => p.count), 1)
     for (const p of partyData) {
-      const sz = 20 + Math.log(p.count + 1) * 8
+      const sz = 25 + (p.count / maxPartyCount) * 25
       nodes.push({
         name: p.name,
         symbolSize: Math.round(sz),
@@ -80,7 +81,7 @@ function AlianzasContent() {
         itemStyle: { color: PARTY_COLORS[p.name] || "#95A5A6" },
         label: {
           show: true,
-          fontSize: 11,
+          fontSize: 12,
           color: PARTY_COLORS[p.name] || "#95A5A6",
         },
         value: p.count,
@@ -92,17 +93,17 @@ function AlianzasContent() {
       })
     }
 
-    // Nodos de diputados top 30 + edges Partido → Diputado
-    const topDeps = allAllies.slice(0, 30)
-    for (const dep of topDeps) {
-      const sz = 8 + Math.log(dep.count + 1) * 4
+    // Nodos de TODOS los diputados + edges Partido → Diputado
+    const maxDepCount = Math.max(...allAllies.map(a => a.count), 1)
+    for (const dep of allAllies) {
+      const sz = 5 + (dep.count / maxDepCount) * 15
       nodes.push({
         name: dep.diputado,
         symbolSize: Math.round(sz),
         category: 2,
         itemStyle: { color: (PARTY_COLORS[dep.partido] || "#95A5A6") + "CC" },
         label: {
-          show: dep.count >= 10,
+          show: dep.count >= 5,
           fontSize: 9,
           color: "#b0b0b0",
         },
@@ -122,17 +123,12 @@ function AlianzasContent() {
         formatter: (params: any) => {
           if (params.dataType === "node") {
             const cat = categories[params.data.category]?.name || ""
-            if (cat === "JAK") return `<strong>José Antonio Kast Rist</strong><br/>Diputado objetivo`
+            if (cat === "JAK") return `<strong>José Antonio Kast Rist</strong><br/>Nodo central`
             if (cat === "Partidos") return `<strong>${params.name}</strong><br/>Partido<br/>${params.data.value} coautorías`
-            return `<strong>${params.name}</strong><br/>${cat}<br/>${params.data.value} proyectos`
+            return `<strong>${params.name}</strong><br/>${params.data.value} proyectos`
           }
           return ""
         },
-      },
-      legend: {
-        data: categories.map(c => c.name),
-        bottom: 10,
-        textStyle: { color: "#b0b0b0", fontSize: 12 },
       },
       animationDuration: 1500,
       animationEasingUpdate: "quinticInOut" as const,
@@ -146,9 +142,9 @@ function AlianzasContent() {
           roam: true,
           draggable: true,
           force: {
-            repulsion: 300,
-            gravity: 0.1,
-            edgeLength: [80, 200],
+            repulsion: 500,
+            gravity: 0.08,
+            edgeLength: [100, 250],
             friction: 0.6,
           },
           emphasis: {
@@ -197,37 +193,33 @@ function AlianzasContent() {
   return (
     <>
       <PageHeader
-        title="Red de Influencia Política"
-        subtitle="Grafo de coautorías: análisis de las alianzas parlamentarias de José Antonio Kast."
+        title="Red de Alianzas Parlamentarias"
+        subtitle="Coautorías legislativas de José Antonio Kast entre 2002 y 2018."
       />
 
-      {/* Grafo de red */}
+      {/* Grafo de red — full-width */}
       <div className="my-12">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start mb-8">
-          <div className="lg:col-span-2">
-            <h3 className="text-2xl font-serif font-semibold mb-4">Mapa de Alianzas</h3>
-            <p className="text-muted-foreground leading-relaxed text-justify">
-              Este grafo interactivo visualiza la red de coautorías legislativas. El nodo central representa a JAK, los nodos medianos a los partidos políticos y los pequeños a los diputados individuales. El tamaño refleja la intensidad de la colaboración.
-            </p>
-            <p className="text-muted-foreground leading-relaxed mt-3 text-sm text-justify">
-              Puedes arrastrar nodos, hacer zoom y pasar el cursor para ver detalles.
-            </p>
-          </div>
-          <div className="lg:col-span-3 bg-[#141414]/60 backdrop-blur-sm border border-white/5 rounded-xl p-4">
-            <EChart
-              option={networkData.graphOption}
-              style={{ height: "600px" }}
-            />
-          </div>
+        <h3 className="text-2xl font-serif font-semibold mb-3 text-center">Mapa de Alianzas</h3>
+        <p className="text-muted-foreground text-sm text-center mb-2 max-w-2xl mx-auto">
+          Red de coautorías legislativas. El nodo central es Kast, los medianos son partidos y los menores son diputados individuales. El tamaño de cada nodo es proporcional al número de proyectos firmados en conjunto.
+        </p>
+        <p className="text-muted-foreground text-xs text-center mb-6">
+          Usa el scroll para acercar o alejar. Arrastra los nodos para reorganizar.
+        </p>
+        <div className="bg-[#141414]/60 backdrop-blur-sm border border-white/5 rounded-xl p-4">
+          <EChart
+            option={networkData.graphOption}
+            style={{ height: "700px" }}
+          />
         </div>
       </div>
 
       <div className="border-t border-white/5 my-8" />
 
       {/* Top 20 aliados */}
-      <h3 className="font-serif text-xl mb-6 text-center">Top 20 Aliados Legislativos</h3>
+      <h3 className="font-serif text-xl mb-6 text-center">Top 20 Aliados</h3>
       <p className="text-muted-foreground text-sm text-center mb-6">
-        Haz clic en un aliado para ver los proyectos coautorados en común.
+        Selecciona un aliado para ver los proyectos firmados en conjunto.
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {networkData.topAllies.map((ally, i) => (
@@ -335,7 +327,7 @@ function AlianzasContent() {
       <div className="mt-8">
         <h3 className="font-serif text-xl mb-4 text-center">Coautorías por Partido</h3>
         <p className="text-muted-foreground text-sm text-center mb-6">
-          Total de coautorías agregadas por partido político.
+          Cantidad total de firmas compartidas, agrupadas por partido.
         </p>
         <div className="bg-[#141414]/80 backdrop-blur-sm border border-white/10 rounded-xl p-6">
           <EChart

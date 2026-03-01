@@ -55,7 +55,7 @@ function ComisionesContent() {
       {/* Treemap */}
       <StorySection
         title="Mapa de Especialización"
-        description="A través de las comisiones, podemos ver dónde se concentra el esfuerzo legislativo.\n\nEste Mapa de Calor agrupa las comisiones específicas en temáticas generales para facilitar la comprensión de las prioridades del diputado."
+        description="Distribución de los proyectos según su temática, derivada de la comisión que los recibió."
         chart={<EChart option={treemapOption} style={{ height: '380px' }} />}
         textLeft
       />

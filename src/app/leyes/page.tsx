@@ -149,7 +149,7 @@ function LeyesContent() {
         <div className="lg:col-span-2">
           <h3 className="text-2xl font-serif font-semibold mb-4">Productividad Legislativa</h3>
           <p className="text-muted-foreground leading-relaxed text-justify">
-            Se han consolidado {leyes.length} leyes a lo largo de los años. Este gráfico muestra en qué años se originaron los proyectos que finalmente tuvieron éxito.
+            Año de ingreso de las {leyes.length} mociones que completaron su tramitación.
           </p>
         </div>
         <div className="lg:col-span-3">
@@ -171,7 +171,7 @@ function LeyesContent() {
         <div className="lg:col-span-2 order-1 lg:order-2">
           <h3 className="text-2xl font-serif font-semibold mb-4">Áreas de Éxito</h3>
           <p className="text-muted-foreground leading-relaxed text-justify">
-            Las comisiones listadas representan los nichos donde el trabajo legislativo ha sido más efectivo, logrando la aprobación final de las leyes.
+            Comisiones de origen de los proyectos que se convirtieron en ley.
           </p>
         </div>
       </div>

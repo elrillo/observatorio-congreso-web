@@ -99,7 +99,7 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: url('/bg-congreso.png') center/cover no-repeat;
+  background: url('/bg-congreso.png') center top/cover no-repeat;
   filter: blur(13px);
   opacity: 0.16;
   pointer-events: none;

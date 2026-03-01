@@ -234,7 +234,7 @@ function GeneralContent() {
       {/* Sección 1: Estado de la Gestión */}
       <StorySection
         title="Estado de la Gestión"
-        description={`Esta sección analiza el ciclo de vida de los ${total} proyectos presentados.\n\nAproximadamente un ${tasaExito.toFixed(1)}% de las iniciativas han logrado convertirse en ley o finalizar su tramitación, lo que representa un indicador clave de efectividad legislativa.\n\nLa mayoría de los proyectos en el Congreso a menudo quedan estancados en comisiones, un desafío común en la labor parlamentaria chilena.`}
+        description={`De las ${total} mociones presentadas, ${leyesCount} completaron su tramitación (${tasaExito.toFixed(1)}%). El gráfico muestra la distribución por estado actual.`}
         chart={<EChart option={donutOption} style={{ height: '380px' }} />}
         textLeft
       />
@@ -242,7 +242,7 @@ function GeneralContent() {
       {/* Sección 2: Áreas de Influencia */}
       <StorySection
         title="Áreas de Influencia"
-        description={`El impacto legislativo se concentra principalmente en las áreas de Constitución, Seguridad y Hacienda.\n\nEste gráfico destaca las 10 comisiones donde se ha ingresado el mayor volumen de iniciativas. Una mayor cantidad de proyectos en comisiones clave sugiere un enfoque en temas de relevancia nacional y reformas estructurales.`}
+        description={`Las 10 temáticas con mayor cantidad de proyectos ingresados. La clasificación se basa en la comisión que recibió cada moción.`}
         chart={<EChart option={comisionOption} style={{ height: '420px' }} />}
         textLeft={false}
       />
@@ -250,7 +250,7 @@ function GeneralContent() {
       {/* Sección 3: Evolución Histórica por año */}
       <StorySection
         title="Evolución Histórica"
-        description={`La actividad parlamentaria no es lineal; fluctúa según los ciclos políticos y los periodos presidenciales.\n\nSe observa una intensidad variable a lo largo de los años, con picos de actividad que suelen coincidir con debates nacionales críticos o el inicio de nuevos mandatos parlamentarios.`}
+        description={`Cantidad de mociones ingresadas por año entre 2002 y 2018.`}
         chart={<EChart option={yearOption} style={{ height: '320px' }} />}
         textLeft
       />
@@ -258,7 +258,7 @@ function GeneralContent() {
       {/* Sección 4: Evolución por Legislatura */}
       <StorySection
         title="Producción por Legislatura"
-        description={`Una mirada agregada por periodo legislativo permite identificar en qué mandatos se concentró la mayor actividad.\n\nCada legislatura comprende cuatro años, con cortes en marzo según el calendario parlamentario chileno. Este análisis contextualiza la productividad dentro de los ciclos políticos formales.`}
+        description={`Total de mociones agrupadas por periodo legislativo. Cada periodo corresponde a cuatro años parlamentarios.`}
         chart={<EChart option={periodOption} style={{ height: '320px' }} />}
         textLeft={false}
       />
@@ -267,7 +267,7 @@ function GeneralContent() {
       <div className="border-t border-white/5 my-8" />
       <h2 className="font-serif text-2xl text-center mb-2">Principales Colaboradores</h2>
       <p className="text-muted-foreground text-center text-sm mb-8 max-w-2xl mx-auto">
-        Los diputados y partidos políticos con mayor frecuencia de coautoría en las iniciativas legislativas.
+        Diputados y partidos que firmaron más proyectos en conjunto con Kast.
       </p>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
         <div className="bg-[#141414]/80 backdrop-blur-sm border border-white/10 rounded-xl p-6">

@@ -144,7 +144,7 @@ function EstadoContent() {
         <div className="lg:col-span-2">
           <h3 className="text-2xl font-serif font-semibold mb-4">Avance Legislativo</h3>
           <p className="text-muted-foreground leading-relaxed text-justify">
-            Esta barra muestra la distribución de todos los proyectos según su etapa de tramitación. Permite comparar de un vistazo cuántas mociones avanzaron frente a las que fueron archivadas.
+            Distribución de los {data.jakMociones.length} proyectos según su etapa de tramitación actual.
           </p>
         </div>
         <div className="lg:col-span-3">
@@ -160,7 +160,7 @@ function EstadoContent() {
       {/* Tabla de progreso legislativo */}
       <h3 className="font-serif text-xl mb-2 text-center">Progreso por Etapa</h3>
       <p className="text-muted-foreground text-sm text-center mb-6">
-        Cada fila muestra el avance de un proyecto a través de las etapas legislativas.
+        Avance de cada proyecto en las etapas del proceso legislativo.
       </p>
 
       <div className="overflow-x-auto mb-12 bg-[#141414]/60 backdrop-blur-sm border border-white/5 rounded-xl">
@@ -216,7 +216,7 @@ function EstadoContent() {
       {/* Rastreador con BoletinCards paginado + filtros */}
       <h3 className="font-serif text-xl mb-2 text-center">Rastreador de Proyectos</h3>
       <p className="text-muted-foreground text-sm text-center mb-6">
-        Tarjetas detalladas de cada proyecto con su estado de avance.
+        Fichas individuales con el detalle de cada proyecto.
       </p>
 
       {/* Filtros del rastreador */}

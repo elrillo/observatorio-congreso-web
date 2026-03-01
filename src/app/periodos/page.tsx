@@ -107,21 +107,21 @@ function PeriodosContent() {
 
       <StorySection
         title={`Desempeño en el periodo legislativo ${selected}`}
-        description={`Durante este mandato, se presentaron ${pTotal} iniciativas.\n\nLa tasa de éxito de este periodo fue de un ${pTasa.toFixed(1)}%.`}
+        description={`Se ingresaron ${pTotal} mociones en este periodo, de las cuales ${pLeyes} completaron su tramitación (${pTasa.toFixed(1)}%).`}
         chart={<EChart option={donutOption} style={{ height: '320px' }} />}
         textLeft
       />
 
       <StorySection
         title="Áreas de Interés"
-        description={`En el periodo ${selected}, la mayoría de los proyectos se concentraron en las categorías visualizadas. Esto revela las prioridades políticas y legislativas de este tiempo específico.`}
+        description={`Distribución temática de los proyectos del periodo ${selected}.`}
         chart={<EChart option={treemapOption} style={{ height: '320px' }} />}
         textLeft={false}
       />
 
       <StorySection
         title="Intensidad Anual"
-        description={`Distribución año a año de las mociones ingresadas dentro del periodo legislativo ${selected}.`}
+        description={`Mociones por año dentro del periodo ${selected}.`}
         chart={<EChart option={barOption} style={{ height: '270px' }} />}
         textLeft
       />
