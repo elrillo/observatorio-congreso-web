@@ -1,4 +1,4 @@
-import type { Mocion, Coautor, Diputado, AnalisisIA, DashboardData, ProcessedData, MocionEnriquecida } from './types'
+import type { Mocion, Coautor, Diputado, AnalisisIA, TextoPdf, DashboardData, ProcessedData, MocionEnriquecida } from './types'
 import { TARGET_VARIANTS, SUCCESS_PATTERN, getPeriod } from './legislative'
 
 /**
@@ -88,6 +88,7 @@ export async function loadDashboardData(): Promise<DashboardData> {
   console.log('[Queries] coautores:', raw.coautores?.length ?? 0, 'rows')
   console.log('[Queries] diputados:', raw.diputados?.length ?? 0, 'rows')
   console.log('[Queries] analisisIA:', raw.analisisIA?.length ?? 0, 'rows')
+  console.log('[Queries] textosPdf:', raw.textosPdf?.length ?? 0, 'rows')
 
   // Log de muestra: primera fila para ver nombres de columnas reales
   if (raw.mociones?.[0]) console.log('[Queries] mociones columns:', Object.keys(raw.mociones[0]))
@@ -100,10 +101,11 @@ export async function loadDashboardData(): Promise<DashboardData> {
   const coautores = (raw.coautores || []).map(normalizeRow) as Coautor[]
   const diputados = (raw.diputados || []).map(normalizeRow) as Diputado[]
   const analisisIA = (raw.analisisIA || []).map(normalizeRow) as AnalisisIA[]
+  const textosPdf = (raw.textosPdf || []).map(normalizeRow) as TextoPdf[]
 
   console.log('[Queries] Datos normalizados OK')
 
-  return { mociones, coautores, diputados, analisisIA }
+  return { mociones, coautores, diputados, analisisIA, textosPdf }
 }
 
 /**
@@ -111,7 +113,7 @@ export async function loadDashboardData(): Promise<DashboardData> {
  * Equivalente a la lógica de procesamiento en app.py líneas 302-336.
  */
 export function processData(data: DashboardData): ProcessedData {
-  const { mociones, coautores, analisisIA } = data
+  const { mociones, coautores, analisisIA, textosPdf } = data
 
   console.log('[Process] Total mociones:', mociones.length)
   console.log('[Process] Total coautores:', coautores.length)
@@ -138,9 +140,14 @@ export function processData(data: DashboardData): ProcessedData {
   // Crear mapa de análisis IA por boletín
   const iaMap = new Map<string, AnalisisIA>()
   for (const ia of analisisIA) {
-    // analisis_ia usa id_boletin como PK, normalizado en normalizeRow a n_boletin también
     const key = ia.id_boletin || ia.n_boletin
     if (key) iaMap.set(key, ia)
+  }
+
+  // Crear mapa de textos_pdf (resumen_ia) por boletín
+  const textosMap = new Map<string, TextoPdf>()
+  for (const t of textosPdf) {
+    if (t.n_boletin) textosMap.set(t.n_boletin, t)
   }
 
   // Filtrar y enriquecer mociones de JAK
@@ -148,6 +155,7 @@ export function processData(data: DashboardData): ProcessedData {
     .filter(m => jakBoletinSet.has(m.n_boletin))
     .map(m => {
       const ia = iaMap.get(m.n_boletin)
+      const texto = textosMap.get(m.n_boletin)
       const fecha = m.fecha_de_ingreso
       return {
         ...m,
@@ -157,6 +165,7 @@ export function processData(data: DashboardData): ProcessedData {
         tipo_iniciativa_ia: ia?.tipo_iniciativa || null,
         sentimiento_score: ia?.sentimiento_score || null,
         tags_temas: ia?.tags_temas || null,
+        resumen_ia: texto?.resumen_ia || null,
       }
     })
 

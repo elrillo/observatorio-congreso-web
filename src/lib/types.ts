@@ -8,6 +8,10 @@ export interface Mocion {
   comision_inicial: string | null
   publicado_en_diario_oficial: string | null
   etapa_del_proyecto: string | null
+  // Columnas _normalizado de Supabase
+  etapa_normalizada?: string | null
+  tematica_normalizada?: string | null
+  tematica_asociada?: string | null
   // Campos calculados en el frontend
   anio?: number
   periodo?: string
@@ -17,6 +21,7 @@ export interface Mocion {
 export interface Coautor {
   n_boletin: string
   diputado: string
+  diputado_normalizado?: string | null
 }
 
 /** Tabla dimensión de diputados */
@@ -27,6 +32,12 @@ export interface Diputado {
   sexo: string | null
   region: string | null
   distrito: string | null
+  // Columnas _normalizado de Supabase
+  diputado_normalizado?: string | null
+  partido_politico_normalizado?: string | null
+  region_normalizada?: string | null
+  coalicion_normalizada?: string | null
+  bancada_comite_normalizado?: string | null
 }
 
 /** Resultados del análisis NLP */
@@ -40,12 +51,19 @@ export interface AnalisisIA {
   tags_temas: string | string[] | null
 }
 
-/** Moción enriquecida con análisis IA (merge de mociones + analisis_ia) */
+/** Texto extraído de PDF con resumen IA */
+export interface TextoPdf {
+  n_boletin: string
+  resumen_ia?: string | null
+}
+
+/** Moción enriquecida con análisis IA (merge de mociones + analisis_ia + textos_pdf) */
 export interface MocionEnriquecida extends Mocion {
   resumen_ejecutivo?: string | null
   tipo_iniciativa_ia?: string | null
   sentimiento_score?: number | null
   tags_temas?: string | string[] | null
+  resumen_ia?: string | null
 }
 
 /** Datos del dashboard cargados desde Supabase */
@@ -54,6 +72,7 @@ export interface DashboardData {
   coautores: Coautor[]
   diputados: Diputado[]
   analisisIA: AnalisisIA[]
+  textosPdf: TextoPdf[]
 }
 
 /** Datos procesados para las visualizaciones del dashboard */

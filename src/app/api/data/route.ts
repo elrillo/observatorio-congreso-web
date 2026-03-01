@@ -23,26 +23,23 @@ export async function GET() {
   try {
     client = await pool.connect()
 
-    // Ejecutar las 4 consultas en paralelo
-    const [mocionesRes, coautoresRes, diputadosRes, iaRes] = await Promise.all([
+    // Ejecutar las 5 consultas en paralelo
+    const [mocionesRes, coautoresRes, diputadosRes, iaRes, textosPdfRes] = await Promise.all([
       client.query('SELECT * FROM mociones'),
       client.query('SELECT * FROM coautores'),
       client.query('SELECT * FROM dim_diputados'),
       client.query('SELECT * FROM analisis_ia'),
+      client.query('SELECT n_boletin, resumen_ia FROM textos_pdf'),
     ])
 
-    console.log(`[API/data] mociones: ${mocionesRes.rowCount}, coautores: ${coautoresRes.rowCount}, dim_diputados: ${diputadosRes.rowCount}, analisis_ia: ${iaRes.rowCount}`)
-
-    // Log de columnas para debug
-    if (mocionesRes.rows[0]) {
-      console.log('[API/data] mociones columns:', Object.keys(mocionesRes.rows[0]))
-    }
+    console.log(`[API/data] mociones: ${mocionesRes.rowCount}, coautores: ${coautoresRes.rowCount}, dim_diputados: ${diputadosRes.rowCount}, analisis_ia: ${iaRes.rowCount}, textos_pdf: ${textosPdfRes.rowCount}`)
 
     return NextResponse.json({
       mociones: mocionesRes.rows,
       coautores: coautoresRes.rows,
       diputados: diputadosRes.rows,
       analisisIA: iaRes.rows,
+      textosPdf: textosPdfRes.rows,
     })
   } catch (error) {
     console.error('[API/data] Error:', error)

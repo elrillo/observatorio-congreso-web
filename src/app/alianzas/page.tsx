@@ -18,14 +18,14 @@ function AlianzasContent() {
     if (!data) return { partyData: [] as { name: string; count: number; fill: string }[], topAllies: [] as { diputado: string; partido: string; count: number }[], allAllies: [] as { diputado: string; partido: string; count: number }[], graphOption: {} as any }
 
     const jakCoauthors = getCoauthorsForBoletines(coautores, data.jakBoletinIds, data.foundName)
-    const dipMap = new Map(diputados.map(d => [d.diputado, d.partido || d.partido_politico || null]))
+    const dipMap = new Map(diputados.map(d => [d.diputado, d.partido_politico_normalizado || d.partido || d.partido_politico || null]))
 
-    // Agrupar por diputado con partido
+    // Agrupar por diputado con partido (usa partido_politico_normalizado si está disponible)
     const allyMap: Record<string, { diputado: string; partido: string; count: number }> = {}
     for (const c of jakCoauthors) {
       if (!allyMap[c.diputado]) {
         const rawParty = dipMap.get(c.diputado) || null
-        allyMap[c.diputado] = { diputado: c.diputado, partido: normalizeParty(rawParty), count: 0 }
+        allyMap[c.diputado] = { diputado: c.diputado, partido: rawParty || normalizeParty(null), count: 0 }
       }
       allyMap[c.diputado].count++
     }
@@ -331,31 +331,43 @@ function AlianzasContent() {
 
       <div className="border-t border-white/5 my-8" />
 
-      {/* Tabla completa */}
+      {/* Chart de partidos agregado */}
       <div className="mt-8">
-        <h3 className="font-serif text-xl mb-4">Detalle por Partido</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-white/10 text-left text-muted-foreground uppercase text-xs tracking-wider">
-                <th className="py-3 px-2">Partido</th>
-                <th className="py-3 px-2">Diputado</th>
-                <th className="py-3 px-2 text-right">Proyectos</th>
-              </tr>
-            </thead>
-            <tbody>
-              {networkData.topAllies.map(a => (
-                <tr key={a.diputado} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                  <td className="py-2 px-2">
-                    <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: getPartyColor(a.partido) }} />
-                    {a.partido}
-                  </td>
-                  <td className="py-2 px-2">{a.diputado}</td>
-                  <td className="py-2 px-2 text-right font-mono">{a.count}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <h3 className="font-serif text-xl mb-4 text-center">Coautorías por Partido</h3>
+        <p className="text-muted-foreground text-sm text-center mb-6">
+          Total de coautorías agregadas por partido político.
+        </p>
+        <div className="bg-[#141414]/80 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+          <EChart
+            option={{
+              tooltip: { trigger: 'axis' as const, axisPointer: { type: 'shadow' as const } },
+              grid: { left: 10, right: 30, top: 10, bottom: 10, containLabel: true },
+              xAxis: { type: 'value' as const },
+              yAxis: {
+                type: 'category' as const,
+                data: [...networkData.partyData].reverse().map(p => p.name),
+                axisLabel: { fontSize: 12 },
+              },
+              series: [{
+                type: 'bar',
+                data: [...networkData.partyData].reverse().map(p => ({
+                  value: p.count,
+                  itemStyle: {
+                    color: PARTY_COLORS[p.name] || '#95a5a6',
+                    borderRadius: [0, 4, 4, 0],
+                  },
+                })),
+                barMaxWidth: 24,
+                label: {
+                  show: true,
+                  position: 'right' as const,
+                  color: '#b0b0b0',
+                  fontSize: 12,
+                },
+              }],
+            }}
+            style={{ height: `${Math.max(250, networkData.partyData.length * 40)}px` }}
+          />
         </div>
       </div>
     </>

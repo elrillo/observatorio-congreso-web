@@ -26,7 +26,7 @@ function PeriodosContent() {
   )
 
   const themeCounts = valueCounts(
-    filtered.map(m => categorizeCommission(m.comision_inicial))
+    filtered.map(m => m.tematica_asociada || categorizeCommission(m.comision_inicial))
   )
 
   const yearCounts = valueCounts(
@@ -106,7 +106,7 @@ function PeriodosContent() {
       <div className="border-t border-white/5 my-8" />
 
       <StorySection
-        title={`Desempeño en ${selected}`}
+        title={`Desempeño en el periodo legislativo ${selected}`}
         description={`Durante este mandato, se presentaron ${pTotal} iniciativas.\n\nLa tasa de éxito de este periodo fue de un ${pTasa.toFixed(1)}%.`}
         chart={<EChart option={donutOption} style={{ height: '320px' }} />}
         textLeft

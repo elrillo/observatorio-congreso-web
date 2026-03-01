@@ -6,7 +6,7 @@ import { KpiCard } from "@/components/KpiCard"
 import { PageHeader } from "@/components/PageHeader"
 import { StorySection } from "@/components/StorySection"
 import { EChart } from "@/components/EChart"
-import { valueCounts, PERIODOS } from "@/lib/legislative"
+import { valueCounts, PERIODOS, categorizeCommission } from "@/lib/legislative"
 import { normalizeParty, getPartyColor, PARTY_COLORS } from "@/lib/parties"
 
 const COLORS = ["#6e20d3", "#5bc2ba", "#3498db", "#eda744", "#e8627c", "#1abc9c", "#e67e22", "#95a5a6"]
@@ -22,9 +22,9 @@ function GeneralContent() {
     jakMociones.map(m => m.estado_del_proyecto_de_ley).filter(Boolean)
   ).slice(0, 8)
 
-  // Comisiones top (barras horizontales)
+  // Temáticas (barras horizontales) — usa tematica_asociada con fallback
   const comisionCounts = valueCounts(
-    jakMociones.map(m => m.comision_inicial || "Desconocida")
+    jakMociones.map(m => m.tematica_asociada || categorizeCommission(m.comision_inicial))
   ).slice(0, 10)
 
   // Producción anual
@@ -74,14 +74,15 @@ function GeneralContent() {
   const donutOption = {
     tooltip: { trigger: 'item' as const, formatter: '{b}: {c} ({d}%)' },
     legend: {
-      bottom: 0,
-      type: 'scroll' as const,
+      orient: 'vertical' as const,
+      right: 10,
+      top: 'middle',
       textStyle: { color: '#b0b0b0', fontSize: 11 },
     },
     series: [{
       type: 'pie',
       radius: ['45%', '75%'],
-      center: ['50%', '45%'],
+      center: ['40%', '50%'],
       data: statusCounts.map((s, i) => ({
         value: s.count,
         name: s.name,
@@ -140,7 +141,7 @@ function GeneralContent() {
 
   const periodOption = {
     tooltip: { trigger: 'axis' as const },
-    grid: { left: 10, right: 10, top: 10, bottom: 10, containLabel: true },
+    grid: { left: 10, right: 10, top: 30, bottom: 10, containLabel: true },
     xAxis: { type: 'category' as const, data: periodCounts.map(p => p.name) },
     yAxis: { type: 'value' as const },
     series: [{
@@ -222,7 +223,7 @@ function GeneralContent() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-        <KpiCard title="Total Iniciativas" value={total} subtitle="Carrera parlamentaria" />
+        <KpiCard title="Iniciativas Presentadas" value={total} subtitle="Carrera parlamentaria" />
         <KpiCard title="Aprobados / Terminados" value={leyesCount} subtitle={`Tasa: ${tasaExito.toFixed(1)}%`} />
         <KpiCard title="Promedio Anual" value={promedioAnual} subtitle="Mociones por año" />
         <KpiCard title="Aliado Histórico" value={topAlly.split(" ").slice(0, 2).join(" ")} subtitle="Mayor colaborador" />

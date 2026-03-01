@@ -101,7 +101,7 @@ export function BoletinCard({
   showResumenIA = true,
 }: BoletinCardProps) {
   const progressVal = mapStageNumeric(mocion.etapa_del_proyecto, mocion.estado_del_proyecto_de_ley)
-  const tema = categorizeCommission(mocion.comision_inicial)
+  const tema = mocion.tematica_asociada || categorizeCommission(mocion.comision_inicial)
   const tags = parseTags(mocion.tags_temas)
   const isLey = SUCCESS_PATTERN.test(mocion.estado_del_proyecto_de_ley || "")
 
@@ -145,7 +145,7 @@ export function BoletinCard({
         {/* Resumen ejecutivo + botón Resumen IA */}
         <div className="mb-5">
           <p className="text-white/50 text-sm leading-relaxed line-clamp-3 mb-2 text-justify">
-            {mocion.resumen_ejecutivo || "Resumen pendiente."}
+            {mocion.resumen_ia || mocion.resumen_ejecutivo || "Resumen pendiente."}
           </p>
           {showResumenIA && (
             <button

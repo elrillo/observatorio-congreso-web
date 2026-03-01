@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/PageHeader"
 import { EChart } from "@/components/EChart"
 import { BoletinCard } from "@/components/BoletinCard"
 import { getCoauthorsForBoletines } from "@/lib/queries"
-import { mapStageNumeric, mapStageLabel, valueCounts } from "@/lib/legislative"
+import { mapStageNumeric, mapStageLabel, valueCounts, categorizeCommission } from "@/lib/legislative"
 
 const STAGE_COLORS: Record<number, string> = {
   0: "#6e20d3",
@@ -21,6 +21,9 @@ const PAGE_SIZE = 20
 function EstadoContent() {
   const { data, coautores, diputados } = useDashboard()
   const [page, setPage] = useState(0)
+  const [searchTracker, setSearchTracker] = useState("")
+  const [filterStage, setFilterStage] = useState<number | null>(null)
+  const [filterTema, setFilterTema] = useState<string>("Todos")
 
   const dipMap = useMemo(() => {
     return new Map(diputados.map(d => [d.diputado, d.partido || d.partido_politico || null]))
@@ -45,11 +48,29 @@ function EstadoContent() {
     return [...(stageData.withStage || [])].sort((a, b) => b.progressVal - a.progressVal)
   }, [stageData.withStage])
 
-  // Opciones del donut ECharts
-  const donutOption = useMemo(() => {
+  // Datos filtrados para el rastreador
+  const filteredTracker = useMemo(() => {
+    let items = sortedByProgress
+    if (searchTracker) {
+      const q = searchTracker.toLowerCase()
+      items = items.filter(m =>
+        (m.nombre_iniciativa || "").toLowerCase().includes(q) ||
+        (m.n_boletin || "").toLowerCase().includes(q)
+      )
+    }
+    if (filterStage !== null) {
+      items = items.filter(m => m.progressVal === filterStage)
+    }
+    if (filterTema !== "Todos") {
+      items = items.filter(m => (m.tematica_asociada || categorizeCommission(m.comision_inicial)) === filterTema)
+    }
+    return items
+  }, [sortedByProgress, searchTracker, filterStage, filterTema])
+
+  // Stacked bar chart option (replaces donut)
+  const stackedBarOption = useMemo(() => {
     if (!stageData.stages.length) return {}
 
-    // Mapear nombre de etapa a su valor numérico para colores
     const stageValMap: Record<string, number> = {
       "Archivado / Retirado": 0,
       "Primer Trámite": 1,
@@ -58,45 +79,58 @@ function EstadoContent() {
       "Tramitación Terminada / Ley": 4,
     }
 
+    const total = stageData.stages.reduce((sum, s) => sum + s.count, 0)
+
     return {
       tooltip: {
-        trigger: "item" as const,
+        trigger: "axis" as const,
+        axisPointer: { type: "shadow" as const },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         formatter: (params: any) => {
-          return `<strong>${params.name}</strong><br/>${params.value} mociones (${params.percent}%)`
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return params.map((p: any) => `<span style="color:${p.color}">\u25CF</span> ${p.seriesName}: ${p.value} (${total > 0 ? ((p.value / total) * 100).toFixed(1) : 0}%)`).join("<br/>")
         },
       },
+      grid: { left: 10, right: 10, top: 10, bottom: 40, containLabel: true },
+      xAxis: { type: "value" as const, max: total, show: false },
+      yAxis: { type: "category" as const, data: [""], show: false },
       legend: {
-        bottom: 10,
-        textStyle: { color: "#b0b0b0", fontSize: 12 },
+        bottom: 0,
+        textStyle: { color: "#b0b0b0", fontSize: 11 },
       },
-      series: [
-        {
-          type: "pie",
-          radius: ["50%", "75%"],
-          center: ["50%", "45%"],
-          avoidLabelOverlap: true,
-          label: { show: false },
-          emphasis: {
-            scale: true,
-            scaleSize: 5,
-          },
-          data: stageData.stages.map(s => ({
-            name: s.name,
-            value: s.count,
-            itemStyle: {
-              color: STAGE_COLORS[stageValMap[s.name] ?? 1] || "#555",
-            },
-          })),
+      series: stageData.stages.map(s => ({
+        type: "bar" as const,
+        stack: "total",
+        name: s.name,
+        data: [s.count],
+        itemStyle: {
+          color: STAGE_COLORS[stageValMap[s.name] ?? 1] || "#555",
+          borderRadius: 0,
         },
-      ],
+        barWidth: 40,
+        label: {
+          show: s.count > 5,
+          position: "inside" as const,
+          color: "#fff",
+          fontSize: 11,
+          fontWeight: "bold" as const,
+          formatter: `${s.count}`,
+        },
+      })),
     }
   }, [stageData.stages])
 
+  // Temas disponibles para filtro del rastreador
+  const availableTemas = useMemo(() => {
+    if (!stageData.withStage.length) return []
+    const temas = new Set(stageData.withStage.map(m => m.tematica_asociada || categorizeCommission(m.comision_inicial)))
+    return Array.from(temas).sort()
+  }, [stageData.withStage])
+
   if (!data) return null
 
-  const totalPages = Math.ceil(sortedByProgress.length / PAGE_SIZE)
-  const currentItems = sortedByProgress.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
+  const totalPages = Math.ceil(filteredTracker.length / PAGE_SIZE)
+  const currentItems = filteredTracker.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
 
   return (
     <>
@@ -105,18 +139,18 @@ function EstadoContent() {
         subtitle="Seguimiento del progreso de las iniciativas de José Antonio Kast."
       />
 
-      {/* Donut de etapas */}
+      {/* Barra 100% apilada de etapas */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center my-12">
         <div className="lg:col-span-2">
           <h3 className="text-2xl font-serif font-semibold mb-4">Avance Legislativo</h3>
           <p className="text-muted-foreground leading-relaxed text-justify">
-            Este gráfico muestra en qué fase se encuentran todos los proyectos. Ayuda a identificar cuántas mociones se encuentran en trámites avanzados frente a las que están en su etapa inicial o fueron archivadas.
+            Esta barra muestra la distribución de todos los proyectos según su etapa de tramitación. Permite comparar de un vistazo cuántas mociones avanzaron frente a las que fueron archivadas.
           </p>
         </div>
         <div className="lg:col-span-3">
           <EChart
-            option={donutOption}
-            style={{ height: "400px" }}
+            option={stackedBarOption}
+            style={{ height: "160px" }}
           />
         </div>
       </div>
@@ -179,11 +213,51 @@ function EstadoContent() {
 
       <div className="border-t border-white/5 my-8" />
 
-      {/* Rastreador con BoletinCards paginado */}
+      {/* Rastreador con BoletinCards paginado + filtros */}
       <h3 className="font-serif text-xl mb-2 text-center">Rastreador de Proyectos</h3>
       <p className="text-muted-foreground text-sm text-center mb-6">
         Tarjetas detalladas de cada proyecto con su estado de avance.
       </p>
+
+      {/* Filtros del rastreador */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div>
+          <label className="text-xs text-muted-foreground uppercase tracking-wider mb-1 block">Buscar</label>
+          <input
+            type="text"
+            value={searchTracker}
+            onChange={e => { setSearchTracker(e.target.value); setPage(0) }}
+            placeholder="Nombre o boletín..."
+            className="w-full bg-[#141414] border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-white/30 placeholder:text-white/20"
+          />
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground uppercase tracking-wider mb-1 block">Etapa</label>
+          <select
+            value={filterStage === null ? "" : String(filterStage)}
+            onChange={e => { setFilterStage(e.target.value === "" ? null : Number(e.target.value)); setPage(0) }}
+            className="w-full bg-[#141414] border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-white/30"
+          >
+            <option value="">Todas</option>
+            <option value="0">Archivado / Retirado</option>
+            <option value="1">Primer Trámite</option>
+            <option value="2">Segundo Trámite</option>
+            <option value="3">Tercer Trámite / Mixta</option>
+            <option value="4">Tramitación Terminada / Ley</option>
+          </select>
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground uppercase tracking-wider mb-1 block">Temática</label>
+          <select
+            value={filterTema}
+            onChange={e => { setFilterTema(e.target.value); setPage(0) }}
+            className="w-full bg-[#141414] border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-white/30"
+          >
+            <option value="Todos">Todas</option>
+            {availableTemas.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </div>
+      </div>
 
       <div className="space-y-6">
         {currentItems.map((m, i) => {

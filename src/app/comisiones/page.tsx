@@ -16,7 +16,7 @@ function ComisionesContent() {
 
   const themeCounts = useMemo(() => {
     if (!data) return []
-    return valueCounts(data.jakMociones.map(m => categorizeCommission(m.comision_inicial)))
+    return valueCounts(data.jakMociones.map(m => m.tematica_asociada || categorizeCommission(m.comision_inicial)))
   }, [data])
 
   if (!data) return null
@@ -37,7 +37,7 @@ function ComisionesContent() {
 
   const activeTema = selectedTema || themeCounts[0]?.name || null
   const filtered = activeTema
-    ? data.jakMociones.filter(m => categorizeCommission(m.comision_inicial) === activeTema)
+    ? data.jakMociones.filter(m => (m.tematica_asociada || categorizeCommission(m.comision_inicial)) === activeTema)
     : []
   const tTotal = filtered.length
   const tLeyes = filtered.filter(m => SUCCESS_PATTERN.test(m.estado_del_proyecto_de_ley)).length
