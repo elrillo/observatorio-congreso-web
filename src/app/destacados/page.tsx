@@ -81,7 +81,7 @@ function DestacadosContent() {
         </div>
         <div className="bg-[#141414]/80 backdrop-blur-sm border border-white/10 rounded-lg p-4 text-center">
           <p className="text-white/30 text-xs uppercase tracking-wider mb-1">Convertidas en Ley</p>
-          <p className="font-serif text-2xl font-bold text-[#2ecc71]">{leyesCount}</p>
+          <p className="font-serif text-2xl font-bold text-[#5bc2ba]">{leyesCount}</p>
           <p className="text-white/40 text-xs">de {featured.length}</p>
         </div>
         <div className="bg-[#141414]/80 backdrop-blur-sm border border-white/10 rounded-lg p-4 text-center">

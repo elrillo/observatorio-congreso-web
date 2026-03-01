@@ -24,7 +24,7 @@ export function StorySection({ title, description, chart, textLeft = true }: Sto
       transition={{ duration: 0.6 }}
     >
       <h3 className="text-2xl font-serif font-semibold mb-4">{title}</h3>
-      <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+      <p className="text-muted-foreground leading-relaxed whitespace-pre-line text-justify">
         {description}
       </p>
     </motion.div>

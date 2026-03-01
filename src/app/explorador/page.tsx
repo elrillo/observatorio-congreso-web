@@ -117,7 +117,7 @@ function ExploradorContent() {
           <tbody>
             {filtered.slice(0, 100).map(m => (
               <tr key={m.n_boletin} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                <td className="py-2.5 px-2 text-[#c0392b] font-mono text-xs whitespace-nowrap">{m.n_boletin}</td>
+                <td className="py-2.5 px-2 text-[#6e20d3] font-mono text-xs whitespace-nowrap">{m.n_boletin}</td>
                 <td className="py-2.5 px-2">{m.nombre_iniciativa}</td>
                 <td className="py-2.5 px-2 text-muted-foreground text-xs whitespace-nowrap">{formatDateHuman(m.fecha_de_ingreso)}</td>
                 <td className="py-2.5 px-2 text-muted-foreground text-xs">{m.estado_del_proyecto_de_ley}</td>
@@ -125,7 +125,7 @@ function ExploradorContent() {
                 <td className="py-2.5 px-2 text-center">
                   <button
                     disabled
-                    className="text-xs px-2 py-1 rounded-full border border-[#c0392b]/30 text-[#c0392b] opacity-70 cursor-not-allowed hover:bg-[#c0392b]/10 transition-colors"
+                    className="text-xs px-2 py-1 rounded-full border border-[#6e20d3]/30 text-[#6e20d3] opacity-70 cursor-not-allowed hover:bg-[#6e20d3]/10 transition-colors"
                     title="Próximamente"
                   >
                     Resumen IA

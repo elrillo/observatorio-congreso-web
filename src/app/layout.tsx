@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Playfair_Display, Merriweather } from "next/font/google"
 import "./globals.css"
+import Link from "next/link"
 import { Navigation } from "@/components/Navigation"
 import { ClientProviders } from "@/components/ClientProviders"
 
@@ -71,7 +72,7 @@ export default function RootLayout({
           <div className="max-w-7xl mx-auto flex flex-wrap justify-between gap-10 px-8 py-14">
             {/* Columna 1: Conecta */}
             <div className="min-w-[280px] flex-1">
-              <h4 className="font-serif text-lg mb-5 border-b-2 border-[#c0392b] inline-block pb-1">
+              <h4 className="font-serif text-lg mb-5 border-b-2 border-[#6e20d3] inline-block pb-1">
                 Conecta
               </h4>
               <p className="text-muted-foreground text-sm mb-5">
@@ -90,7 +91,7 @@ export default function RootLayout({
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#c0392b] hover:-translate-y-0.5 transition-all duration-300"
+                    className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#6e20d3] hover:-translate-y-0.5 transition-all duration-300"
                   >
                     <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d={icon} /></svg>
                   </a>
@@ -103,25 +104,30 @@ export default function RootLayout({
 
             {/* Columna 2: Explora */}
             <div className="min-w-[200px]">
-              <h4 className="font-serif text-lg mb-5 border-b-2 border-[#c0392b] inline-block pb-1">
+              <h4 className="font-serif text-lg mb-5 border-b-2 border-[#6e20d3] inline-block pb-1">
                 Explora
               </h4>
               <div className="flex flex-col gap-3">
-                {["Sobre Nosotros", "Metodología de Datos", "Términos de Uso", "Política de Privacidad"].map((link) => (
-                  <a
-                    key={link}
-                    href="#"
+                {[
+                  { label: "Sobre Nosotros", href: "#" },
+                  { label: "Metodología de Datos", href: "/metodologia" },
+                  { label: "Términos de Uso", href: "/terminos" },
+                  { label: "Descarga", href: "/descarga" },
+                ].map(({ label, href }) => (
+                  <Link
+                    key={label}
+                    href={href}
                     className="text-muted-foreground text-sm hover:text-white hover:translate-x-1 transition-all duration-300"
                   >
-                    {link}
-                  </a>
+                    {label}
+                  </Link>
                 ))}
               </div>
             </div>
 
             {/* Columna 3: Observatorio Congreso */}
             <div className="min-w-[280px] flex-1">
-              <h4 className="font-serif text-lg mb-5 border-b-2 border-[#c0392b] inline-block pb-1">
+              <h4 className="font-serif text-lg mb-5 border-b-2 border-[#6e20d3] inline-block pb-1">
                 Observatorio Congreso
               </h4>
               <p className="text-muted-foreground text-sm leading-relaxed">

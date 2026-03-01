@@ -9,7 +9,7 @@ import { EChart } from "@/components/EChart"
 import { valueCounts, PERIODOS } from "@/lib/legislative"
 import { normalizeParty, getPartyColor, PARTY_COLORS } from "@/lib/parties"
 
-const COLORS = ["#c0392b", "#2ecc71", "#3498db", "#f39c12", "#9b59b6", "#1abc9c", "#e67e22", "#95a5a6"]
+const COLORS = ["#6e20d3", "#5bc2ba", "#3498db", "#eda744", "#e8627c", "#1abc9c", "#e67e22", "#95a5a6"]
 
 function GeneralContent() {
   const { data, coautores, diputados } = useDashboard()
@@ -111,7 +111,7 @@ function GeneralContent() {
     series: [{
       type: 'bar',
       data: [...comisionCounts].reverse().map(c => c.count),
-      itemStyle: { color: '#c0392b', borderRadius: [0, 4, 4, 0] },
+      itemStyle: { color: '#6e20d3', borderRadius: [0, 4, 4, 0] },
       barMaxWidth: 20,
     }],
   }
@@ -128,8 +128,8 @@ function GeneralContent() {
         color: {
           type: 'linear' as const, x: 0, y: 0, x2: 0, y2: 1,
           colorStops: [
-            { offset: 0, color: '#c0392b' },
-            { offset: 1, color: '#962d22' },
+            { offset: 0, color: '#6e20d3' },
+            { offset: 1, color: '#5a18a8' },
           ],
         },
         borderRadius: [4, 4, 0, 0],

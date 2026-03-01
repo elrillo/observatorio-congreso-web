@@ -8,7 +8,7 @@ import { StorySection } from "@/components/StorySection"
 import { EChart } from "@/components/EChart"
 import { categorizeCommission, valueCounts, SUCCESS_PATTERN } from "@/lib/legislative"
 
-const COLORS = ["#c0392b", "#2ecc71", "#3498db", "#f39c12", "#9b59b6", "#1abc9c", "#e67e22", "#95a5a6", "#e74c3c", "#16a085", "#2980b9", "#d35400"]
+const COLORS = ["#6e20d3", "#5bc2ba", "#3498db", "#eda744", "#e8627c", "#1abc9c", "#e67e22", "#95a5a6", "#8b3ee0", "#16a085", "#2980b9", "#d35400"]
 
 function ComisionesContent() {
   const { data } = useDashboard()
@@ -85,7 +85,7 @@ function ComisionesContent() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <KpiCard title="Proyectos en Temática" value={tTotal} subtitle={activeTema} />
             <KpiCard title="Exitosos / Leyes" value={tLeyes} subtitle={`${tTotal > 0 ? (tLeyes / tTotal * 100).toFixed(1) : 0}% efectividad`} />
-            <KpiCard title="Comisión Principal" value={topSubCom.length > 25 ? topSubCom.slice(0, 25) + "..." : topSubCom} subtitle="Mayor frecuencia" />
+            <KpiCard title="Comisión Principal" value={topSubCom} subtitle="Mayor frecuencia" />
           </div>
 
           <h4 className="font-serif text-lg mb-4">Proyectos de {activeTema}</h4>
@@ -102,7 +102,7 @@ function ComisionesContent() {
               <tbody>
                 {filtered.sort((a, b) => (b.fecha_de_ingreso || "").localeCompare(a.fecha_de_ingreso || "")).map(m => (
                   <tr key={m.n_boletin} className="border-b border-white/5 hover:bg-white/5">
-                    <td className="py-2 px-2 text-[#c0392b] font-mono text-xs">{m.n_boletin}</td>
+                    <td className="py-2 px-2 text-[#6e20d3] font-mono text-xs">{m.n_boletin}</td>
                     <td className="py-2 px-2">{m.nombre_iniciativa?.slice(0, 70)}{(m.nombre_iniciativa?.length || 0) > 70 ? "..." : ""}</td>
                     <td className="py-2 px-2 text-muted-foreground text-xs">{m.estado_del_proyecto_de_ley}</td>
                     <td className="py-2 px-2 text-muted-foreground text-xs">{m.comision_inicial}</td>

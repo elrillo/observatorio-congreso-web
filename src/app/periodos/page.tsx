@@ -8,7 +8,7 @@ import { StorySection } from "@/components/StorySection"
 import { EChart } from "@/components/EChart"
 import { PERIODOS, SUCCESS_PATTERN, categorizeCommission, valueCounts } from "@/lib/legislative"
 
-const COLORS = ["#c0392b", "#2ecc71", "#3498db", "#f39c12", "#9b59b6", "#1abc9c", "#e67e22", "#95a5a6"]
+const COLORS = ["#6e20d3", "#5bc2ba", "#3498db", "#eda744", "#e8627c", "#1abc9c", "#e67e22", "#95a5a6"]
 
 function PeriodosContent() {
   const { data } = useDashboard()
@@ -69,7 +69,7 @@ function PeriodosContent() {
     series: [{
       type: 'bar',
       data: yearCounts.map(y => y.count),
-      itemStyle: { color: '#c0392b', borderRadius: [4, 4, 0, 0] },
+      itemStyle: { color: '#6e20d3', borderRadius: [4, 4, 0, 0] },
       barMaxWidth: 30,
     }],
   }
@@ -142,7 +142,7 @@ function PeriodosContent() {
             <tbody>
               {filtered.sort((a, b) => (b.fecha_de_ingreso || "").localeCompare(a.fecha_de_ingreso || "")).map(m => (
                 <tr key={m.n_boletin} className="border-b border-white/5 hover:bg-white/5">
-                  <td className="py-2 px-2 text-[#c0392b] font-mono text-xs">{m.n_boletin}</td>
+                  <td className="py-2 px-2 text-[#6e20d3] font-mono text-xs">{m.n_boletin}</td>
                   <td className="py-2 px-2">{m.nombre_iniciativa?.slice(0, 80)}{(m.nombre_iniciativa?.length || 0) > 80 ? "..." : ""}</td>
                   <td className="py-2 px-2 text-muted-foreground text-xs">{m.estado_del_proyecto_de_ley}</td>
                   <td className="py-2 px-2 text-muted-foreground text-xs whitespace-nowrap">{m.fecha_de_ingreso?.slice(0, 10)}</td>

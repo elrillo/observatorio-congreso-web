@@ -206,10 +206,10 @@ function AlianzasContent() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start mb-8">
           <div className="lg:col-span-2">
             <h3 className="text-2xl font-serif font-semibold mb-4">Mapa de Alianzas</h3>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-muted-foreground leading-relaxed text-justify">
               Este grafo interactivo visualiza la red de coautorías legislativas. El nodo central representa a JAK, los nodos medianos a los partidos políticos y los pequeños a los diputados individuales. El tamaño refleja la intensidad de la colaboración.
             </p>
-            <p className="text-muted-foreground leading-relaxed mt-3 text-sm">
+            <p className="text-muted-foreground leading-relaxed mt-3 text-sm text-justify">
               Puedes arrastrar nodos, hacer zoom y pasar el cursor para ver detalles.
             </p>
           </div>
@@ -239,7 +239,7 @@ function AlianzasContent() {
             onClick={() => setSelectedAlly(selectedAlly === ally.diputado ? null : ally.diputado)}
             className={`bg-[#141414]/80 backdrop-blur-sm border rounded-lg p-4 flex items-center gap-3 cursor-pointer transition-all duration-200 hover:border-white/20 ${
               selectedAlly === ally.diputado
-                ? "border-[#c0392b]/50 bg-[#c0392b]/5"
+                ? "border-[#6e20d3]/50 bg-[#6e20d3]/5"
                 : "border-white/5"
             }`}
           >
@@ -312,7 +312,7 @@ function AlianzasContent() {
                   <tbody>
                     {allyDetail.projects.map(p => (
                       <tr key={p.n_boletin} className="border-b border-white/5 hover:bg-white/5">
-                        <td className="py-2 px-2 text-[#c0392b] font-mono text-xs whitespace-nowrap">{p.n_boletin}</td>
+                        <td className="py-2 px-2 text-[#6e20d3] font-mono text-xs whitespace-nowrap">{p.n_boletin}</td>
                         <td className="py-2 px-2 text-white/80 text-xs">{(p.nombre_iniciativa || "").slice(0, 100)}{(p.nombre_iniciativa || "").length > 100 ? "..." : ""}</td>
                         <td className="py-2 px-2 text-muted-foreground text-xs whitespace-nowrap">{formatDateHuman(p.fecha_de_ingreso)}</td>
                         <td className="py-2 px-2 text-muted-foreground text-xs">{p.estado_del_proyecto_de_ley}</td>

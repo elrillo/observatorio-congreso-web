@@ -9,11 +9,11 @@ import { getCoauthorsForBoletines } from "@/lib/queries"
 import { mapStageNumeric, mapStageLabel, valueCounts } from "@/lib/legislative"
 
 const STAGE_COLORS: Record<number, string> = {
-  0: "#c0392b",
-  1: "#e67e22",
-  2: "#f39c12",
+  0: "#6e20d3",
+  1: "#eda744",
+  2: "#eda744",
   3: "#3498db",
-  4: "#2ecc71",
+  4: "#5bc2ba",
 }
 
 const PAGE_SIZE = 20
@@ -109,7 +109,7 @@ function EstadoContent() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center my-12">
         <div className="lg:col-span-2">
           <h3 className="text-2xl font-serif font-semibold mb-4">Avance Legislativo</h3>
-          <p className="text-muted-foreground leading-relaxed">
+          <p className="text-muted-foreground leading-relaxed text-justify">
             Este gráfico muestra en qué fase se encuentran todos los proyectos. Ayuda a identificar cuántas mociones se encuentran en trámites avanzados frente a las que están en su etapa inicial o fueron archivadas.
           </p>
         </div>
@@ -147,23 +147,23 @@ function EstadoContent() {
               const isArchived = v === 0
               return (
                 <tr key={m.n_boletin} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                  <td className="py-2 px-3 text-[#c0392b] font-mono text-xs whitespace-nowrap sticky left-0 bg-[#141414]/90 backdrop-blur-sm z-10">
+                  <td className="py-2 px-3 text-[#6e20d3] font-mono text-xs whitespace-nowrap sticky left-0 bg-[#141414]/90 backdrop-blur-sm z-10">
                     {m.n_boletin}
                   </td>
                   <td className="py-2 px-3 text-white/70 text-xs truncate max-w-[300px]" title={m.nombre_iniciativa}>
                     {(m.nombre_iniciativa || "").slice(0, 60)}{(m.nombre_iniciativa || "").length > 60 ? "..." : ""}
                   </td>
                   <td className="py-2 px-2 text-center">
-                    {isArchived ? <span className="text-white/20">&mdash;</span> : v >= 1 ? <span className="text-[#2ecc71] font-bold">&#10003;</span> : <span className="text-white/10">&#9675;</span>}
+                    {isArchived ? <span className="text-white/20">&mdash;</span> : v >= 1 ? <span className="text-[#5bc2ba] font-bold">&#10003;</span> : <span className="text-white/10">&#9675;</span>}
                   </td>
                   <td className="py-2 px-2 text-center">
-                    {isArchived ? <span className="text-white/20">&mdash;</span> : v >= 2 ? <span className="text-[#2ecc71] font-bold">&#10003;</span> : <span className="text-white/10">&#9675;</span>}
+                    {isArchived ? <span className="text-white/20">&mdash;</span> : v >= 2 ? <span className="text-[#5bc2ba] font-bold">&#10003;</span> : <span className="text-white/10">&#9675;</span>}
                   </td>
                   <td className="py-2 px-2 text-center">
-                    {isArchived ? <span className="text-white/20">&mdash;</span> : v >= 3 ? <span className="text-[#2ecc71] font-bold">&#10003;</span> : <span className="text-white/10">&#9675;</span>}
+                    {isArchived ? <span className="text-white/20">&mdash;</span> : v >= 3 ? <span className="text-[#5bc2ba] font-bold">&#10003;</span> : <span className="text-white/10">&#9675;</span>}
                   </td>
                   <td className="py-2 px-2 text-center">
-                    {isArchived ? <span className="text-white/20">&mdash;</span> : v >= 4 ? <span className="text-[#2ecc71] font-bold">&#10003;</span> : <span className="text-white/10">&#9675;</span>}
+                    {isArchived ? <span className="text-white/20">&mdash;</span> : v >= 4 ? <span className="text-[#5bc2ba] font-bold">&#10003;</span> : <span className="text-white/10">&#9675;</span>}
                   </td>
                 </tr>
               )

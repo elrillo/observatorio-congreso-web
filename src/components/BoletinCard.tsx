@@ -21,8 +21,8 @@ export function parseTags(tags: string | string[] | null | undefined): string[] 
 function getTypeColor(tipo: string | null): string {
   if (!tipo) return "#95A5A6"
   const t = tipo.toLowerCase()
-  if (t.includes("punitiva")) return "#c0392b"
-  if (t.includes("propositiva")) return "#2ecc71"
+  if (t.includes("punitiva")) return "#6e20d3"
+  if (t.includes("propositiva")) return "#5bc2ba"
   if (t.includes("administrativa")) return "#3498db"
   return "#95A5A6"
 }
@@ -58,7 +58,7 @@ function TypeIcon({ tipo }: { tipo: string | null }) {
 /** Gauge circular compacto */
 export function MiniGauge({ value, max = 4 }: { value: number; max?: number }) {
   const pct = value === 0 ? 5 : (value / max) * 100
-  const color = value >= 4 ? "#2ecc71" : value === 0 ? "#c0392b" : "#3498db"
+  const color = value >= 4 ? "#5bc2ba" : value === 0 ? "#6e20d3" : "#3498db"
   const circumference = 2 * Math.PI * 28
   const dashLength = (pct / 100) * circumference
 
@@ -115,7 +115,7 @@ export function BoletinCard({
       {/* Barra superior de acento */}
       <div
         className="h-1 w-full"
-        style={{ background: isLey ? "#2ecc71" : getTypeColor(mocion.tipo_iniciativa_ia || null) }}
+        style={{ background: isLey ? "#5bc2ba" : getTypeColor(mocion.tipo_iniciativa_ia || null) }}
       />
 
       <div className="p-6 lg:p-8">
@@ -126,7 +126,7 @@ export function BoletinCard({
               Boletín {mocion.n_boletin}
             </span>
             {isLey && (
-              <span className="text-xs font-semibold text-[#2ecc71] bg-[#2ecc71]/10 px-2.5 py-1 rounded-full flex items-center gap-1">
+              <span className="text-xs font-semibold text-[#5bc2ba] bg-[#5bc2ba]/10 px-2.5 py-1 rounded-full flex items-center gap-1">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
@@ -144,12 +144,12 @@ export function BoletinCard({
 
         {/* Resumen ejecutivo + botón Resumen IA */}
         <div className="mb-5">
-          <p className="text-white/50 text-sm leading-relaxed line-clamp-3 mb-2">
+          <p className="text-white/50 text-sm leading-relaxed line-clamp-3 mb-2 text-justify">
             {mocion.resumen_ejecutivo || "Resumen pendiente."}
           </p>
           {showResumenIA && (
             <button
-              className="text-xs px-3 py-1.5 rounded-full border border-[#c0392b]/30 text-[#c0392b] hover:bg-[#c0392b]/10 transition-colors cursor-not-allowed opacity-70"
+              className="text-xs px-3 py-1.5 rounded-full border border-[#6e20d3]/30 text-[#6e20d3] hover:bg-[#6e20d3]/10 transition-colors cursor-not-allowed opacity-70"
               disabled
               title="Próximamente"
             >
@@ -188,7 +188,7 @@ export function BoletinCard({
           {mocion.publicado_en_diario_oficial && (
             <div>
               <span className="text-white/30 text-xs uppercase tracking-wider block mb-0.5">Publicado</span>
-              <span className="text-[#2ecc71]">{formatDateHuman(mocion.publicado_en_diario_oficial)}</span>
+              <span className="text-[#5bc2ba]">{formatDateHuman(mocion.publicado_en_diario_oficial)}</span>
             </div>
           )}
         </div>

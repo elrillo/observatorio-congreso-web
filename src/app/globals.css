@@ -30,7 +30,7 @@
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
-  --color-accent-red: var(--accent-red);
+  --color-accent-primary: var(--accent-primary);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -67,16 +67,16 @@
   --muted-foreground: #b0b0b0;
   --accent: #1a1a1a;
   --accent-foreground: #ffffff;
-  --accent-red: #c0392b;
-  --destructive: #c0392b;
+  --accent-primary: #6e20d3;
+  --destructive: #6e20d3;
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.15);
   --ring: rgba(255, 255, 255, 0.2);
-  --chart-1: #c0392b;
-  --chart-2: #2ecc71;
+  --chart-1: #6e20d3;
+  --chart-2: #5bc2ba;
   --chart-3: #3498db;
-  --chart-4: #f39c12;
-  --chart-5: #9b59b6;
+  --chart-4: #eda744;
+  --chart-5: #e8627c;
 }
 
 @layer base {
@@ -90,9 +90,7 @@
   h1, h2, h3, h4 {
     font-family: var(--font-serif), serif;
   }
-  p {
-    text-align: justify;
-  }
+  /* text-justify se aplica selectivamente via clase Tailwind en párrafos narrativos */
 }
 
 /* Fondo difuminado del congreso */
@@ -102,8 +100,8 @@ body::before {
   inset: 0;
   z-index: -1;
   background: url('/bg-congreso.png') center/cover no-repeat;
-  filter: blur(20px);
-  opacity: 0.08;
+  filter: blur(13px);
+  opacity: 0.16;
   pointer-events: none;
 }
 

@@ -34,7 +34,7 @@ export function Navigation() {
           >
             <Icon
               size={24}
-              className={`transition-all duration-300 ${isActive ? "text-[#c0392b] scale-110" : "group-hover:-translate-y-0.5"}`}
+              className={`transition-all duration-300 ${isActive ? "text-[#6e20d3] scale-110" : "group-hover:-translate-y-0.5"}`}
             />
             <span className="hidden sm:inline">{label}</span>
           </Link>

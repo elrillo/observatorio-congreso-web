@@ -80,7 +80,7 @@ export function DashboardGate({ children }: { children: ReactNode }) {
   if (error) {
     return (
       <div className="text-center py-32">
-        <p className="text-[#c0392b] font-serif text-xl mb-2">Error</p>
+        <p className="text-[#6e20d3] font-serif text-xl mb-2">Error</p>
         <p className="text-muted-foreground">{error}</p>
       </div>
     )

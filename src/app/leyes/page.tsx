@@ -75,7 +75,7 @@ function LeyesContent() {
         type: "bar",
         data: leyesPorAnio.map(d => d.count),
         itemStyle: {
-          color: "#2ecc71",
+          color: "#5bc2ba",
           borderRadius: [4, 4, 0, 0],
         },
         barMaxWidth: 40,
@@ -109,7 +109,7 @@ function LeyesContent() {
         type: "bar",
         data: leyesPorComision.map(d => d.count),
         itemStyle: {
-          color: "#f39c12",
+          color: "#eda744",
           borderRadius: [0, 4, 4, 0],
         },
         barMaxWidth: 30,
@@ -148,7 +148,7 @@ function LeyesContent() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center my-12">
         <div className="lg:col-span-2">
           <h3 className="text-2xl font-serif font-semibold mb-4">Productividad Legislativa</h3>
-          <p className="text-muted-foreground leading-relaxed">
+          <p className="text-muted-foreground leading-relaxed text-justify">
             Se han consolidado {leyes.length} leyes a lo largo de los años. Este gráfico muestra en qué años se originaron los proyectos que finalmente tuvieron éxito.
           </p>
         </div>
@@ -170,7 +170,7 @@ function LeyesContent() {
         </div>
         <div className="lg:col-span-2 order-1 lg:order-2">
           <h3 className="text-2xl font-serif font-semibold mb-4">Áreas de Éxito</h3>
-          <p className="text-muted-foreground leading-relaxed">
+          <p className="text-muted-foreground leading-relaxed text-justify">
             Las comisiones listadas representan los nichos donde el trabajo legislativo ha sido más efectivo, logrando la aprobación final de las leyes.
           </p>
         </div>

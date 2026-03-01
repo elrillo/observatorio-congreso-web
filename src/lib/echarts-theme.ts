@@ -7,9 +7,9 @@ export const THEME_NAME = 'observatorio-dark'
 
 export const observatorioTheme = {
   color: [
-    '#c0392b', '#2ecc71', '#3498db', '#f39c12',
-    '#9b59b6', '#1abc9c', '#e67e22', '#95a5a6',
-    '#e74c3c', '#2980b9', '#27ae60', '#f1c40f',
+    '#6e20d3', '#5bc2ba', '#3498db', '#eda744',
+    '#e8627c', '#1abc9c', '#e67e22', '#95a5a6',
+    '#8b3ee0', '#2980b9', '#27ae60', '#f1c40f',
   ],
   backgroundColor: 'transparent',
   textStyle: {
