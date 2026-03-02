@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Auditoria de seguridad 2026-03-02
+.env.local
+.env.production
+.env.*.local
+id_rsa
+credentials.json
+secrets.json
